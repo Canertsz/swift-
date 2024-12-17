@@ -9,12 +9,13 @@ import Foundation
 
 protocol HomepageViewModelProtocol {
     func fetchCharacters()
+    func didLoad()
 }
 
-class HomepageViewModel: HomepageViewModelProtocol {
+final class HomepageViewModel: HomepageViewModelProtocol {
         
     func fetchCharacters() {
-        NetworkManager.shared.makeRequest(endpoint: HomePageEndpoints.getCharacters(limit: 20), responseType: CharacterDataWrapper.self) { response in
+        NetworkManager.shared.makeRequest(endpoint: HomepageEndpoints.getCharacters, responseType: CharacterDataWrapper.self) { response in
             switch response {
             case .success(let characters):
                 print("Fetched Characters: \(characters)")
@@ -22,5 +23,9 @@ class HomepageViewModel: HomepageViewModelProtocol {
                 print("Failed to fetch Characters: \(error)")
             }
         }
+    }
+    
+    func didLoad() {
+        fetchCharacters()
     }
 }

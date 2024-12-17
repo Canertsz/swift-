@@ -7,8 +7,8 @@
 
 import Foundation
 
-enum HomePageEndpoints: EndpointProtocol {
-    case getCharacters(limit: Int)
+enum HomepageEndpoints: EndpointProtocol {
+    case getCharacters
 
     var url: String {
         switch self {
@@ -31,10 +31,22 @@ enum HomePageEndpoints: EndpointProtocol {
         }
     }
     
+    var limit: Int {
+        switch self {
+        case .getCharacters:
+            return 20
+        }
+    }
+    
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .getCharacters(let limit):
-            return [URLQueryItem(name: "limit", value: "\(limit)")]
+        case .getCharacters:
+            return [
+                URLQueryItem(name: "limit", value: "\(self.limit)"),
+                URLQueryItem(name: "ts", value: NetworkManagerHelpers.generateTS()),
+                URLQueryItem(name: "apikey", value: NetworkManagerHelpers.generatePublicKey()),
+                URLQueryItem(name: "hash", value: NetworkManagerHelpers.generateHash()),
+            ]
         }
     }
 }

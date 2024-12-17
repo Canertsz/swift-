@@ -5,9 +5,8 @@
 //  Created by Caner Tüysüz on 5.12.2024.
 //
 
-
-import Foundation
 import CryptoKit
+import Foundation
 
 enum HTTPMethod: String {
     case GET = "GET"
@@ -23,107 +22,148 @@ protocol EndpointProtocol {
     var queryItems: [URLQueryItem]? { get }
 }
 
+extension EndpointProtocol {
+    var headers: [String: String]? { return nil }
+    var queryItems: [URLQueryItem]? { return nil }
+}
+
 enum NetworkError: Error {
     case invalidURL
     case decodingError
+    case networkError(String)
     case serverError(String)
-    
+
     var title: String {
         return "Error (\(errorCode))"
     }
-    
+
     var description: String {
-        switch self {
-        case .invalidURL, .decodingError:
-            return "An error occured.."
-        case .serverError:
-            return "There is a server problem"
-        }
+        return "An error occured"
     }
-    
+
     var errorCode: Int {
         switch self {
+        case .networkError:
+            return 100
         case .invalidURL:
-            return 1
+            return 200
         case .decodingError:
-            return 2
+            return 300
         case .serverError:
-            return 3
+            return 400
         }
     }
 }
 
-class NetworkManager {
-    
+enum NetworkResult<T> {
+    case success(T)
+    case failure(NetworkError)
+}
+
+final class NetworkManager {
+
     static let shared = NetworkManager()
-    
-    func makeRequest<T: Decodable>(endpoint: EndpointProtocol, responseType: T.Type, completion: ( @escaping (Swift.Result<T, NetworkError>) -> Void)) {
-        
+
+    func makeRequest<T: Decodable>(
+        endpoint: EndpointProtocol, responseType: T.Type,
+        completion: (@escaping (NetworkResult<T>) -> Void)
+    ) {
+
         guard var components = URLComponents(string: endpoint.url) else {
             completion(.failure(.invalidURL))
             return
         }
-        
+
         components.queryItems = endpoint.queryItems
-        
-        for queryParam in NetworkManagerHelpers.generateQueryParams() {
-            components.queryItems?.append(queryParam)
-        }
-        
+
         guard let url = components.url else {
             completion(.failure(.invalidURL))
             return
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
-        
+
         if let headers = endpoint.headers {
             for (key, value) in headers {
                 request.setValue(value, forHTTPHeaderField: key)
             }
         }
-        
+
         URLSession.shared.dataTask(with: request) { data, response, error in
-            
-            if let error = error {
-                completion(.failure(.serverError("server error")))
+            if let error {
+                print("Network error occurred: \(error.localizedDescription)")
+                
+                completion(.failure(.networkError(error.localizedDescription)))
                 return
             }
-            
+
+            if let httpResponse = response as? HTTPURLResponse {
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    print("Server responded with status code: \(httpResponse.statusCode)")
+                    
+                    completion(.failure(.serverError("Server returned status code \(httpResponse.statusCode)")))
+                    return
+                }
+            } else {
+                print("Unexpected response format")
+                
+                completion(.failure(.serverError("Invalid response from server")))
+                return
+            }
+
             do {
-                guard let data = data else { return }
+                guard let data else { return }
+
                 let decodedResponse = try JSONDecoder().decode(T.self, from: data)
                 completion(.success(decodedResponse))
             } catch {
-                print(String(describing: error))
+                print("Decoding error: \(error.localizedDescription)")
                 completion(.failure(.decodingError))
             }
 
         }.resume()
+
     }
-  
+
 }
 
-class NetworkManagerHelpers {
-    static func generateQueryParams() -> [URLQueryItem] {
-        guard
-            let publicKey = ProcessInfo.processInfo.environment["PUBLIC_KEY"],
-            let privateKey = ProcessInfo.processInfo.environment["PRIVATE_KEY"]
-        else {
-            fatalError("Environment variables PUBLIC_KEY and PRIVATE_KEY are required.")
+final class NetworkManagerHelpers {
+    static func generateTS() -> String {
+        return "1"
+    }
+    
+    static func generatePublicKey() -> String? {
+        return ProcessInfo.processInfo.environment["PUBLIC_KEY"]
+    }
+
+    static func generatePrivateKey() -> String? {
+        return ProcessInfo.processInfo.environment["PRIVATE_KEY"]
+    }
+
+    static func generateHash() -> String? {
+        let ts = self.generateTS()
+        
+        guard let publicKey = self.generatePublicKey() else {
+            print("Public key is missing")
+            return nil
         }
         
-        let ts = "\(Date().timeIntervalSince1970)"
+        guard let privateKey = self.generatePrivateKey() else {
+            print("Private key is missing")
+            return nil
+        }
+
         let hashInput = "\(ts)\(privateKey)\(publicKey)"
         
-        let hash = Insecure.MD5.hash(data: hashInput.data(using: .utf8)!)
+        guard let data = hashInput.data(using: .utf8) else {
+            print("Failed to encode hash input as UTF-8")
+            return nil
+        }
+        
+        let hash = Insecure.MD5.hash(data: data)
         let hashString = hash.map { String(format: "%02hhx", $0) }.joined()
         
-        return [
-            URLQueryItem(name: "ts", value: ts),
-            URLQueryItem(name: "apikey", value: publicKey),
-            URLQueryItem(name: "hash", value: hashString)
-        ]
+        return hashString
     }
 }

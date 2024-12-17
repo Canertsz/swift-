@@ -77,12 +77,12 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "PRIVATE_KEY"
-            value = "86096fa7f2b50d32f4ee8e5355d2cf6579154440"
+            value = "c17ceee8deee6cf3c74f4459a371e86c27fb878a"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "PUBLIC_KEY"
-            value = "656611e38b1ffe8d7b530a86509715da"
+            value = "65c817ceb2056103b877db26690ce21d"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

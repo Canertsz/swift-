@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomepageVC: UIViewController {
+final class HomepageVC: UIViewController {
     
     private let viewModel: HomepageViewModelProtocol
     
@@ -22,13 +22,7 @@ class HomepageVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchCharacters()
-    }
-    
-    private func fetchCharacters() {
-        viewModel.fetchCharacters()
+        
+        viewModel.didLoad()
     }
 }
-
-
-
