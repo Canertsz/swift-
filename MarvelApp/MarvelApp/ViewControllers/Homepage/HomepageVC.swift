@@ -23,6 +23,6 @@ final class HomepageVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        viewModel.didLoad()
+        viewModel.viewDidLoad()
     }
 }

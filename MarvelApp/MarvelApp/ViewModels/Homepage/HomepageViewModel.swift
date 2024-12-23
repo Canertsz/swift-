@@ -9,23 +9,29 @@ import Foundation
 
 protocol HomepageViewModelProtocol {
     func fetchCharacters()
-    func didLoad()
+    func viewDidLoad()
 }
 
 final class HomepageViewModel: HomepageViewModelProtocol {
+    
+    private let repository: HomepageRepositoryProtocol
+    
+    init(repository: HomepageRepositoryProtocol) {
+        self.repository = repository
+    }
         
     func fetchCharacters() {
-        NetworkManager.shared.makeRequest(endpoint: HomepageEndpoints.getCharacters, responseType: CharacterDataWrapper.self) { response in
-            switch response {
-            case .success(let characters):
-                print("Fetched Characters: \(characters)")
+        repository.fetchCharacters { [weak self] result in
+            switch result {
+            case .success(let character):
+                print("Fetched characters: \(character)")
             case .failure(let error):
-                print("Failed to fetch Characters: \(error)")
+                print("Error fetching characters: \(error)")
             }
         }
     }
     
-    func didLoad() {
+    func viewDidLoad() {
         fetchCharacters()
     }
 }
