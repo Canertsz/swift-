@@ -10,11 +10,22 @@ import Foundation
 enum HomepageEndpoints: EndpointProtocol {
     case getCharacters
 
-    var url: String {
+    var baseURL: String {
         switch self {
         case .getCharacters:
-            return "https://gateway.marvel.com:443/v1/public/characters"
+            return "https://gateway.marvel.com:443"
         }
+    }
+    
+    var path: String {
+        switch self {
+        case .getCharacters:
+            return "/v1/public/characters"
+        }
+    }
+    
+    var url: String {
+        return baseURL + path
     }
     
     var method: HTTPMethod {
@@ -27,7 +38,7 @@ enum HomepageEndpoints: EndpointProtocol {
     var headers: [String : String]? {
         switch self {
         case .getCharacters:
-            return ["Content-Type": "application/json"]
+            return nil
         }
     }
     
@@ -38,14 +49,14 @@ enum HomepageEndpoints: EndpointProtocol {
         }
     }
     
-    var queryItems: [URLQueryItem]? {
+    var queryItems: [String: String?]? {
         switch self {
         case .getCharacters:
             return [
-                URLQueryItem(name: "limit", value: "\(self.limit)"),
-                URLQueryItem(name: "ts", value: NetworkManagerHelpers.generateTS()),
-                URLQueryItem(name: "apikey", value: NetworkManagerHelpers.generatePublicKey()),
-                URLQueryItem(name: "hash", value: NetworkManagerHelpers.generateHash()),
+                "limit": "\(self.limit)",
+                "ts": NetworkManagerHelpers.generateTS(),
+                "apikey": NetworkManagerHelpers.generatePublicKey(),
+                "hash": NetworkManagerHelpers.generateHash()
             ]
         }
     }

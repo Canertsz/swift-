@@ -16,10 +16,12 @@ enum HTTPMethod: String {
 }
 
 protocol EndpointProtocol {
+    var baseURL: String { get }
+    var path: String { get }
     var url: String { get }
     var method: HTTPMethod { get }
     var headers: [String: String]? { get }
-    var queryItems: [URLQueryItem]? { get }
+    var queryItems: [String: String?]? { get }
 }
 
 extension EndpointProtocol {
@@ -63,20 +65,28 @@ enum NetworkResult<T> {
 final class NetworkManager {
 
     static let shared = NetworkManager()
+    
+    func buildQueryItems(from items: [String: String?]) -> [URLQueryItem] {
+        return items.map { key, value in
+            URLQueryItem(name: key, value: value)
+        }
+    }
 
     func makeRequest<T: Decodable>(
         endpoint: EndpointProtocol, responseType: T.Type,
         completion: (@escaping (NetworkResult<T>) -> Void)
     ) {
 
-        guard var components = URLComponents(string: endpoint.url) else {
+        guard var urlComponents = URLComponents(string: endpoint.url) else {
             completion(.failure(.invalidURL))
             return
         }
+        
+        if let items = endpoint.queryItems {
+            urlComponents.queryItems = buildQueryItems(from: items)
+        }
 
-        components.queryItems = endpoint.queryItems
-
-        guard let url = components.url else {
+        guard let url = urlComponents.url else {
             completion(.failure(.invalidURL))
             return
         }
@@ -85,6 +95,9 @@ final class NetworkManager {
         request.httpMethod = endpoint.method.rawValue
 
         if let headers = endpoint.headers {
+            
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
             for (key, value) in headers {
                 request.setValue(value, forHTTPHeaderField: key)
             }
