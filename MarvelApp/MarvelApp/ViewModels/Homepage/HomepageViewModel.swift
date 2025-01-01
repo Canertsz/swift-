@@ -11,14 +11,15 @@ protocol HomepageViewModelProtocol {
     func viewDidLoad()
 }
 
-final class HomepageViewModel: HomepageViewModelProtocol {
-    
+final class HomepageViewModel {
     private let repository: HomepageRepositoryProtocol
     
     init(repository: HomepageRepositoryProtocol) {
         self.repository = repository
     }
-    
+}
+
+extension HomepageViewModel: HomepageViewModelProtocol {
     func viewDidLoad() {
         fetchCharacters()
     }
