@@ -12,7 +12,6 @@ protocol HomepageRepositoryProtocol {
 }
 
 final class HomepageRepository: HomepageRepositoryProtocol {
-    
     func fetchCharacters(completion: @escaping (NetworkResult<CharacterDataWrapper>) -> Void) {
         NetworkManager.shared.makeRequest(
             endpoint: HomepageEndpoints.getCharacters,
@@ -20,5 +19,4 @@ final class HomepageRepository: HomepageRepositoryProtocol {
             completion: completion
         )
     }
-    
 }

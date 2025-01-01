@@ -8,7 +8,6 @@
 import Foundation
 
 protocol HomepageViewModelProtocol {
-    func fetchCharacters()
     func viewDidLoad()
 }
 
@@ -19,7 +18,13 @@ final class HomepageViewModel: HomepageViewModelProtocol {
     init(repository: HomepageRepositoryProtocol) {
         self.repository = repository
     }
-        
+    
+    func viewDidLoad() {
+        fetchCharacters()
+    }
+}
+
+private extension HomepageViewModel {
     func fetchCharacters() {
         repository.fetchCharacters { [weak self] result in
             switch result {
@@ -29,9 +34,5 @@ final class HomepageViewModel: HomepageViewModelProtocol {
                 print("Error fetching characters: \(error)")
             }
         }
-    }
-    
-    func viewDidLoad() {
-        fetchCharacters()
     }
 }
