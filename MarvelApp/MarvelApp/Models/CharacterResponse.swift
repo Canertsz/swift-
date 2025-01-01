@@ -1,6 +1,6 @@
 import Foundation
 
-struct CharacterDataWrapper: Codable {
+struct CharacterDataWrapper: Decodable {
     let code: Int?
     let status: String?
     let copyright: String?
@@ -10,7 +10,7 @@ struct CharacterDataWrapper: Codable {
     let etag: String?
 }
 
-struct CharacterDataContainer: Codable {
+struct CharacterDataContainer: Decodable {
     let offset: Int?
     let limit: Int?
     let total: Int?
@@ -18,7 +18,7 @@ struct CharacterDataContainer: Codable {
     let results: [Character]?
 }
 
-struct Character: Codable {
+struct Character: Decodable {
     let id: Int?
     let name: String?
     let description: String?
@@ -32,61 +32,61 @@ struct Character: Codable {
     let series: SeriesList?
 }
 
-struct Url: Codable {
+struct Url: Decodable {
     let type: String?
     let url: String?
 }
 
-struct Image: Codable {
+struct Image: Decodable {
     let path: String?
     let `extension`: String?
 }
 
-struct ComicList: Codable {
+struct ComicList: Decodable {
     let available: Int?
     let returned: Int?
     let collectionURI: String?
     let items: [ComicSummary]?
 }
 
-struct ComicSummary: Codable {
+struct ComicSummary: Decodable {
     let resourceURI: String?
     let name: String?
 }
 
-struct StoryList: Codable {
+struct StoryList: Decodable {
     let available: Int?
     let returned: Int?
     let collectionURI: String?
     let items: [StorySummary]?
 }
 
-struct StorySummary: Codable {
+struct StorySummary: Decodable {
     let resourceURI: String?
     let name: String?
     let type: String?
 }
 
-struct EventList: Codable {
+struct EventList: Decodable {
     let available: Int?
     let returned: Int?
     let collectionURI: String?
     let items: [EventSummary]?
 }
 
-struct EventSummary: Codable {
+struct EventSummary: Decodable {
     let resourceURI: String?
     let name: String?
 }
 
-struct SeriesList: Codable {
+struct SeriesList: Decodable {
     let available: Int?
     let returned: Int?
     let collectionURI: String?
     let items: [SeriesSummary]?
 }
 
-struct SeriesSummary: Codable {
+struct SeriesSummary: Decodable {
     let resourceURI: String?
     let name: String?
 }
