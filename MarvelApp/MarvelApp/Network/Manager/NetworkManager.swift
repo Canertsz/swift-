@@ -127,42 +127,31 @@ final class NetworkManager {
 
 }
 
-final class NetworkManagerHelpers {
+enum NetworkManagerHelpers {
     static func generateTS() -> String {
         return "1"
     }
     
     static func generatePublicKey() -> String? {
-        return ProcessInfo.processInfo.environment["PUBLIC_KEY"]
+        return EnvironmentKeys.publicKey
     }
-
+    
     static func generatePrivateKey() -> String? {
-        return ProcessInfo.processInfo.environment["PRIVATE_KEY"]
+        return EnvironmentKeys.privateKey
     }
-
+    
     static func generateHash() -> String? {
-        let ts = self.generateTS()
-        
-        guard let publicKey = self.generatePublicKey() else {
-            print("Public key is missing")
+        guard let publicKey = generatePublicKey(),
+              let privateKey = generatePrivateKey() else {
+            
+            print("Missing API keys")
+            
             return nil
         }
         
-        guard let privateKey = self.generatePrivateKey() else {
-            print("Private key is missing")
-            return nil
-        }
-
-        let hashInput = "\(ts)\(privateKey)\(publicKey)"
-        
-        guard let data = hashInput.data(using: .utf8) else {
-            print("Failed to encode hash input as UTF-8")
-            return nil
-        }
-        
-        let hash = Insecure.MD5.hash(data: data)
-        let hashString = hash.map { String(format: "%02hhx", $0) }.joined()
-        
-        return hashString
+        return HashHelper.generateHash(ts: generateTS(),
+                                       publicKey: publicKey,
+                                       privateKey: privateKey)
     }
 }
+
