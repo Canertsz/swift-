@@ -11,6 +11,6 @@ protocol BaseEndpoint: EndpointProtocol {
 
 extension BaseEndpoint {
     var baseURL: String {
-        "https://gateway.marvel.com/v1/public"
+        "https://gateway.marvel.com/"
     }
 }
