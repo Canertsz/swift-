@@ -15,20 +15,6 @@ enum HTTPMethod: String {
     case DELETE = "DELETE"
 }
 
-protocol EndpointProtocol {
-    var baseURL: String { get }
-    var path: String { get }
-    var url: String { get }
-    var method: HTTPMethod { get }
-    var headers: [String: String]? { get }
-    var queryItems: [String: String?]? { get }
-}
-
-extension EndpointProtocol {
-    var headers: [String: String]? { return nil }
-    var queryItems: [URLQueryItem]? { return nil }
-}
-
 enum NetworkError: Error {
     case invalidURL
     case decodingError

@@ -7,15 +7,8 @@
 
 import Foundation
 
-enum HomepageEndpoints: EndpointProtocol {
+enum HomepageEndpoints: BaseEndpoint {
     case getCharacters
-
-    var baseURL: String {
-        switch self {
-        case .getCharacters:
-            return "https://gateway.marvel.com:443"
-        }
-    }
     
     var path: String {
         switch self {
