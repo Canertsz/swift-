@@ -49,7 +49,7 @@ enum NetworkResult<T> {
 }
 
 final class NetworkManager {
-
+    
     static let shared = NetworkManager()
     
     func buildQueryItems(from items: [String: String?]) -> [URLQueryItem] {
@@ -122,7 +122,6 @@ final class NetworkManager {
             }
 
         }.resume()
-
     }
 
 }
@@ -148,7 +147,7 @@ enum NetworkManagerHelpers {
             
             return nil
         }
-        
+
         return HashHelper.generateHash(ts: generateTS(),
                                        publicKey: publicKey,
                                        privateKey: privateKey)

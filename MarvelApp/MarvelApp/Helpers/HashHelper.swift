@@ -32,6 +32,5 @@ final class HashHelper {
         let hashString = hash.map { String(format: "%02hhx", $0) }.joined()
 
         return hashString
-
     }
 }

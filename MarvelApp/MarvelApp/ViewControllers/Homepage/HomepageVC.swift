@@ -8,7 +8,7 @@
 import UIKit
 
 final class HomepageVC: UIViewController {
-    
+
     private let viewModel: HomepageViewModelProtocol
     
     required init?(coder: NSCoder) {
